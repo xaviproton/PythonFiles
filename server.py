@@ -98,7 +98,7 @@ async def list_files():
 
 @app.get("/api/download/{name}")
 async def download(name: str):
-    safe = os.path.basename(name)
+    safe = os.path.basename(name).strip().strip('"')
     path = os.path.join(UPLOAD_DIR, safe)
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="No encontrado")
