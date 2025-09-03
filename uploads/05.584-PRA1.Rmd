@@ -1,0 +1,2272 @@
+---
+title: 'Mineria de dades: PRA1 - Selecció i preparació d''un joc de dades'
+author: "Autor: Xavier Martin Rodriguez"
+date: "Abril 2025"
+output:
+  html_document:
+    highlight: default
+    number_sections: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 2
+    includes:
+      in_header: 05.584-PAC-header.html
+  word_document: default
+  pdf_document:
+    highlight: zenburn
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+******
+# Enunciat
+******
+Tot estudi analític ha de néixer d'una necessitat per part del negoci o d'una voluntat de dotar-lo d'un coneixement i contingut en les dades que només podrem obtenir a través d'una col·lecció de bones pràctiques basades en la Mineria de Dades.
+
+El món de l'analítica de dades es sustenta en 3 eixos:
+
+1. Un d'ells és el profund **coneixement** que hauríem de tenir **del negoci** a què tractem de donar respostes mitjançant els estudis analítics.
+
+2. L'altre gran eix és sens dubte les **capacitats analítiques** que siguem capaços de desplegar i en aquest sentit, les dues pràctiques d'aquesta assignatura pretenen que l'estudiant realitzi un recorregut sòlid per aquest segon eix.
+
+3. El tercer eix són els **dades**. Les necessitats del negoci s'han de concretar amb preguntes analítiques que al seu torn siguin viables respondre a partir de les dades de què disposem. La tasca d'analitzar les dades és sens dubte important, però la tasca d'identificar-los i obtenir-los ha de ser per a un analista un repte permanent.
+
+Com **primera part** de l'estudi analític que ens disposem a realitzar, es demana a l'estudiant que completi els següents passos:
+
+1. Plantejar un problema de analítica de dades detallant-ne els objectius analítics i explica una metodologia per a resoldre'ls d'acord amb lo practicat en les PAC anteriors i també d'acord a lo que s'ha aprés en el material didàctic.
+
+2. Seleccionar un joc de dades i justificar-ne l'elecció. El joc de dades **haurà de tenir capacitats** perquè se li puguin aplicar **algorismes supervisats** i **algorismes no supervisats** a la PRA2 i haurà d'estar alineat amb el problema analític plantejat al pas anterior.
+
+* **Requisits mínims del conjunt de dades**:
+  + Ha de ser diferent de qualsevol conjunt de dades utilitzat en les PAC anteriors.
+  + No utilitzeu el conjunt de dades anomenat [German Credit Risk](https://www.kaggle.com/datasets/uciml/german-credit), ja que l'utilitzarem a la PAC3.
+  + Ha de contenir almenys: 500 observacions, 5 variables numèriques, 2 variables categòriques i 1 variable binària. Entenem que trobar un conjunt de dades que compleixi exactament tots els criteris pot ser un repte. Per això, si un conjunt de dades és interessant i adequat per a l'anàlisi, però no compleix algun criteri puntual, es pot utilitzar justificant-ne l'elecció.
+
+
+Adjuntem aquí una llista de portals de dades obertes per seleccionar el joc de dades. Es poden utilitzar altres fonts per obtenir el vostre joc de dades, però recordeu de citar-les:
+
+* **Dades obertes**:
+  + [Dades obertes Espanya](https://datos.gob.es/es/catalogo?q=&frequency=%7B"type"%3A+"months"%2C+"value"%3A+"1"%7D&sort=score+desc%2C+metadata_modified+desc)
+  + [Dades obertes Madrid](https://datos.madrid.es/portal/site/egob/)
+  + [Dades obertes Barcelona](https://opendata-ajuntament.barcelona.cat/es/)
+  + [Dades obertes Londres](https://data.london.gov.uk/)
+  + [Dades obertes New York](https://opendata.cityofnewyork.us/)
+  
+* **Conjunts de dades per a aprenentatge automàtic i investigació**
+  + [UCI Machine Learning](https://archive.ics.uci.edu/datasets?orderBy=DateDonated&sort=desc)
+  + [Datasets for machine-learning research (Wikipedia)](https://en.wikipedia.org/wiki/List_of_datasets_for_machine-learning_research)
+  + [Kaggle datasets](https://www.kaggle.com/datasets)
+
+3. Realitzar una anàlisi exploratòria de el joc de dades seleccionat.
+
+4. Realitzar tasques de neteja i condicionat per poder ser usat en processos de modelatge.
+
+5. Realitzar mètodes de discretització
+
+6. Aplicar un estudi PCA sobre el joc de dades. Tot i no estar explicat en el material didàctic, es valorarà si en lloc de PCA investigueu pel vostre compte i apliqueu SVD (Single Value Decomposition).
+* **Alguns recursos**
+  * [PCA per reducció de dimensions](https://www.aprendemachinelearning.com/comprende-principal-component-analysis/)
+  * [SVD Singular Value Decomposition](https://math.mit.edu/classes/18.095/2016IAP/lec2/SVD_Notes.pdf)
+
+Per a totes les PRA **cal documentar** a cada apartat de l'exercici pràctic que s'ha fet, perquè s'ha fet i com s'ha fet. Així mateix, totes les decisions i conclusions hauran de ser presentades de forma raonada i clara, **contextualitzant els resultats**, és a dir, especificant tots i cadascun dels passos que s'hagin dut a terme per resoldre'ls. Finalment, incloeu una **conclusió final** resumint els resultats obtinguts en la pràctica i indiqueu eventuals **citacions bibliogràfiques**, fonts internes/externes i materials de recerca.
+
+<!-- * **Document lliurable** -->
+
+<!-- S'han de lliurar tant el fitxer RMD com el fitxer HTML resultant d'executar el document R/Python amb Rmarkdown mitjançant el comando Knit. -->
+<!-- Cal fer-ho amb el següent nom 75.584-PRA1-NomEstudiant.html -->
+
+******
+# Recursos de programació
+******
+* Incloem en aquest apartat una llista de recursos de programació per a mineria de dades on podreu trobar exemples, idees i inspiració:
+  + [Material addicional del llibre: Minería de datos Modelos y Algoritmos](https://discovery.biblioteca.uoc.edu/discovery/fulldisplay?docid=alma991000548909706712&context=L&vid=34CSUC_UOC:VU1&lang=ca&search_scope=MyInst_and_CI&adaptor=Local%20Search%20Engine&tab=Everything&query=any,contains,Minería%20de%20datos%20Modelos%20y%20Algoritmos)
+  + [Espai de recursos UOC per a ciència de dades](http://datascience.recursos.uoc.edu/)
+  + [Cercador de codi R](https://rseek.org/)  
+  + [Col·lecció de cheatsheets en R](https://www.rstudio.com/resources/cheatsheets/)  
+  
+
+******
+
+# Cargamos el dataset
+
+```{r}
+path = 'Ecommerce_Consumer_Behavior_Analysis_Data.csv'
+ecommerce <- read.csv(path, row.names=NULL)
+
+```
+# Planteamiento del problema
+
+En el contexto actual del comercio electrónico, comprender el comportamiento del
+consumidor es fundamental para optimizar las estrategias de marketing, personalizar
+la experiencia del usuario y aumentar la tasa de conversión. 
+Las plataformas recopilan cada vez más datos sobre sus usuarios, incluyendo 
+información demográfica, hábitos de navegación, respuestas a campañas promocionales 
+y preferencias de compra.
+
+Con base en el conjunto de datos *"Ecommerce Consumer Behavior Analysis"*, 
+se plantea el siguiente problema analítico principal:
+
+**¿Qué factores influyen más en la intención de compra de un usuario?**
+
+La pregunta surge del interés por identificar qué variables son más determinantes
+a la hora de que un usuario decida realizar una compra en línea. 
+A partir de esta cuestión, se derivan los siguientes objetivos analíticos:
+
+
+
+## Objetivo del análisis
+
+El propósito principal de este estudio es analizar qué variables del comportamiento del consumidor y de su perfil influyen más en la intención o decisión final de compra dentro de una plataforma de comercio electrónico.
+
+Para alcanzar este objetivo general, se definen los siguientes objetivos específicos:
+
+1. Analizar las variables demográficas de los usuarios y su relación con la intención de compra (`Purchase_Intent`), para detectar perfiles con mayor predisposición a comprar.
+
+2. Estudiar el comportamiento de navegación de los usuarios en el sitio web y evaluar su impacto sobre la decisión de compra.
+
+3. Explorar el efecto de factores comerciales y psicológicos, como el uso de descuentos, pertenencia a un programa de fidelización o interacción con anuncios en el proceso de decisión.
+
+4. Identificar patrones comunes mediante técnicas de clustering no supervisado, que permitan agrupar usuarios en segmentos basados en su comportamiento o perfil.
+
+5. Reducir la dimensionalidad del conjunto de datos con Análisis de Componentes Principales (PCA) para facilitar la visualización, interpretación y preparación de los datos para modelos predictivos en la segunda parte de la práctica (PRA2).
+
+
+# Comprension de datos`
+
+El conjunto de datos utilizado contiene información sobre usuarios que han interactuado 
+con una plataforma de comercio electrónico.
+Está compuesto por un total de 1.000 observaciones (usuarios únicos) y 28 variables,
+que recogen aspectos tanto del perfil demográfico del cliente como de su comportamiento de compra,
+navegación, sensibilidad al precio y engagement con la publicidad.
+
+
+
+## Origen del conjunto de datos
+
+El conjunto de datos utilizado en este estudio proviene de la plataforma Kaggle, 
+un repositorio ampliamente reconocido por la comunidad científica y profesional 
+por ofrecer datasets de calidad para proyectos de análisis de datos y aprendizaje automático.
+
+El dataset se titula *“Ecommerce Consumer Behavior Analysis Data”*, y ha sido recopilado
+con el propósito de analizar y comprender los factores que influyen en el comportamiento
+de compra de usuarios en plataformas de comercio electrónico.
+
+Este tipo de información es de gran utilidad para departamentos de marketing digital,
+analistas de negocio y desarrolladores de sistemas de recomendación, ya que permite 
+optimizar campañas, personalizar la experiencia del usuario y predecir patrones de conversión.
+
+web: https://www.kaggle.com/datasets/salahuddinahmedshuvo/ecommerce-consumer-behavior-analysis-data 
+
+
+
+###  Características del origen
+
+*Fuente:* Kaggle (autor: Salah Uddin Ahmed Shuvo)
+
+*Tipo de datos:* Datos simulados, estructurados, limpios y etiquetados.
+
+*Formato original:* Archivo .csv, con codificación estándar UTF-8.
+
+*Licencia:* Uso libre para fines educativos y de investigación, sin restricciones comerciales.
+
+
+
+
+##  Justificación del uso del conjunto de datos
+
+Este conjunto de datos ha sido seleccionado por su idoneidad tanto para tareas de análisis 
+supervisado como no supervisado, tal como se requiere en esta práctica. 
+Su estructura, contenido y volumen permiten aplicar de forma práctica y razonada 
+los pasos del proceso CRISP-DM.
+
+A continuación, se detallan los motivos principales que justifican su elección:
+
+**1.  Alineación con el problema analítico planteado**
+
+El conjunto de datos recoge información completa sobre distintos aspectos del comportamiento 
+de usuarios en un entorno de comercio electrónico. 
+Esto se relaciona directamente con la pregunta principal del estudio:
+
+¿Qué factores influyen más en la intención o decisión de compra de un usuario?
+
+Las variables incluidas permiten explorar múltiples dimensiones del comportamiento:
+perfil demográfico, uso de descuentos, lealtad a la marca, interacción con publicidad,
+tiempo de decisión, etc.
+
+**2. Cumplimiento de los requisitos técnicos exigidos**
+
+Requisitos: 
+
+≥ 500 observaciones	- Contiene 1.000 registros.
+
+≥ 5 variables numéricas	- Edad, monto de compra, tiempo de investigación, frecuencia...
+
+≥ 2 variables categóricas	- Género, canal de compra, nivel educativo...
+
+≥ 1 variable binaria	- Discount_Used, Customer_Loyalty_Program_Member.
+
+Permite tareas supervisadas	- purchase_Intent o una binarización de Purchase_Amount.
+
+Permite tareas no supervisadas	- segmentación de usuarios por perfil y comportamiento (clustering).
+
+
+**3.  Representatividad y riqueza del contenido**
+
+El dataset permite cubrir una gran variedad de situaciones reales en comercio electrónico. 
+Además, incluye variables con escalas diversas (ordinales, categóricas, binarias, continuas),
+lo que lo convierte en un caso completo para aplicar todo el flujo de minería de datos.
+
+**4. Posibilidades de aplicación futura (fase de modelado)**
+
+Gracias a la diversidad de variables y su calidad, este dataset permitirá en la segunda 
+parte de la práctica (PRA2) aplicar técnicas como:
+
+Clasificación de la intención de compra.
+
+Segmentación de usuarios con clustering.
+
+Modelos explicativos con variables seleccionadas por PCA.
+
+
+
+
+## Exploración del dataset
+
+### Ver las primeras filas del dataset
+
+```{r, message=FALSE, warning=FALSE}
+head(ecommerce)
+```
+### Ver un resumen estadístico general
+
+```{r, message=FALSE, warning=FALSE}
+
+summary(ecommerce)
+```
+### Ver la estructura del dataset
+
+```{r, message=FALSE, warning=FALSE}
+
+str(ecommerce)
+
+```
+### Número de filas y columnas
+```{r, message=FALSE, warning=FALSE}
+
+cat("Número de observaciones:", nrow(ecommerce), "\n")
+cat("Número de variables:", ncol(ecommerce), "\n")
+
+```
+### Nombres de todas las columnas
+```{r,  message=FALSE, warning=FALSE}
+
+colnames(ecommerce)
+
+```
+### Crear un resumen con nombre, tipo de dato y número de valores únicos
+```{r, results='asis', message=FALSE, warning=FALSE}
+
+variable_summary <- data.frame(
+  Variable = colnames(ecommerce),
+  Tipo = sapply(ecommerce, class),
+  Valores_unicos = sapply(ecommerce, function(x) length(unique(x))),
+  row.names = NULL
+)
+
+# Instalar y cargar knitr si no está instalado
+if (!require(knitr)) {
+  install.packages("knitr")
+  library(knitr)
+} else {
+  library(knitr)
+}
+
+# Mostrar la tabla formateada (solo esta línea imprime)
+kable(variable_summary, caption = "Resumen de variables del dataset")
+```
+### Explicación de las varfiables del dataset
+
+**Customer_ID:**
+
+Tipo: Categórica nominal (ID)
+
+Descripción: Identificador único para cada cliente.
+
+Observaciones: No tiene valor analítico directo. Se usará solo como referencia o para filtrados.
+
+**Age:**
+
+Tipo: Numérica continua
+
+Descripción: Edad del usuario en años.
+
+Observaciones: Ideal para segmentar perfiles de edad. Puede discretizarse en rangos.
+
+**Gender:**
+
+Tipo: Categórica nominal
+
+Descripción: Género del usuario (Female, Male, Bigender, Agender, etc.).
+
+Observaciones: Hay categorías con pocos registros → podría reagruparse en "Otros".
+
+
+**Income_Level:**
+
+Tipo: Categórica ordinal
+
+Descripción: Nivel de ingresos del usuario (Low, Middle, High).
+
+Observaciones: Puede ordenarse. Útil para análisis de gasto y segmentación.
+
+
+**Marital_Status:**
+
+Tipo: Categórica nominal
+
+Descripción: Estado civil del usuario (Single, Married, Divorced, Widowed).
+
+Observaciones: Podría relacionarse con frecuencia de compra o tipo de producto.
+
+
+**Education_Level:**
+
+Tipo: Categórica ordinal
+
+Descripción: Nivel educativo del usuario (High School, Bachelor's, Master's).
+
+Observaciones: Puede ordenarse. Relevante para análisis sociodemográfico.
+
+
+**Occupation:**
+
+Tipo: Categórica
+
+Descripción: Nivel o tipo de ocupación (Low, Middle, High).
+
+Observaciones: Similar a ingresos. Puede ser redundante o combinarse.
+
+
+**Location:**
+
+Tipo: Categórica nominal (con 969 valores únicos)
+
+Descripción: Ciudad o área del usuario.
+
+Observaciones: No es útil directamente para análisis → demasiados niveles. Requiere agrupación o eliminación.
+
+
+**Purchase_Category:**
+
+Tipo: Categórica nominal
+
+Descripción: Tipo de producto comprado (Electronics, Furniture, etc.).
+
+Observaciones: Útil para segmentación de intereses y preferencias de compra.
+
+
+**Purchase_Amount:**
+
+Tipo: Numérica continua
+
+Descripción: Monto total de la compra en dólares.
+
+Observaciones: Limpiada previamente ($ eliminado). Puede analizarse directamente o discretizarse por rangos.
+
+
+**Frequency_of_Purchase:**
+
+Tipo: Numérica discreta
+
+Descripción: Número total de compras realizadas por el usuario.
+
+Observaciones: Puede reflejar el nivel de actividad o fidelización del cliente. 
+  Muy útil para segmentar clientes frecuentes vs. ocasionales.
+  
+  
+**Purchase_Channel:**
+
+Tipo: Categórica nominal
+
+Descripción: Canal desde el cual se realizó la compra (Web, Mobile, Mixed).
+
+Observaciones: Útil para analizar comportamientos por canal y orientar estrategias multicanal.
+
+
+**Brand_Loyalty:**
+
+Tipo: Ordinal (escala 1–5)
+
+Descripción: Nivel de lealtad del usuario hacia la marca.
+
+Observaciones: Directamente útil como predictor de repetición de compra.
+  Puede correlacionarse con Frequency_of_Purchase.
+  
+  
+**Product_Rating:**
+
+Tipo: Ordinal (escala 1–5)
+
+Descripción: Puntuación que el cliente da al producto adquirido.
+
+Observaciones: Útil para medir satisfacción puntual y calidad percibida del producto.
+
+
+**Time_Spent_on_Product_Research(hours):**
+
+Tipo: Numérica continua
+
+Descripción: Horas que el usuario dedicó a investigar productos antes de comprar.
+
+Observaciones: Puede relacionarse con el tipo de producto o la indecisión del cliente.
+
+
+**Social_Media_Influence:**
+
+Tipo: Categórica ordinal
+
+Descripción: Grado de influencia de redes sociales sobre la decisión de compra (Low, Medium, High, None).
+
+Observaciones: Ideal para entender perfiles influenciables por contenido digital.
+
+
+**Discount_Sensitivity:**
+
+Tipo: Categórica ordinal
+
+Descripción: Nivel de sensibilidad del cliente frente a descuentos (Low, Moderate, Very Sensitive).
+
+Observaciones: Puede ser clave en campañas de pricing personalizado.
+
+
+**Return_Rate:**
+
+Tipo: Numérica discreta
+
+Descripción: Número de veces que el cliente ha devuelto productos.
+
+Observaciones: Indicador de insatisfacción o comportamiento exigente.
+
+
+**Customer_Satisfaction:**
+
+Tipo: Ordinal (escala 1–10)
+
+Descripción: Valoración general del cliente sobre su experiencia.
+
+Observaciones: Excelente variable para correlaciones y validación de segmentación.
+
+
+**Engagement_with_Ads:**
+
+Tipo: Categórica ordinal
+
+Descripción: Grado de interacción con publicidad (None, Low, Medium, High).
+
+Observaciones: Importante para predecir receptividad a marketing digital.
+
+
+
+**Device_Used_for_Shopping:**
+
+Tipo: Categórica nominal
+
+Descripción: Dispositivo usado por el usuario para realizar la compra (Desktop, Mobile, Tablet).
+
+Observaciones: Útil para analizar diferencias de comportamiento por canal. 
+  Puede relacionarse con edad o gasto.
+  
+
+**Payment_Method;**
+
+Tipo: Categórica nominal
+
+Descripción: Método de pago elegido (Credit Card, Debit Card, PayPal, Other, etc.).
+
+Observaciones: Puede ayudar a detectar hábitos de compra o limitaciones tecnológicas.
+  No es predictor directo, pero puede complementar análisis.
+  
+  
+
+**Time_of_Purchase:**
+
+Tipo: Categórica (fecha como texto)
+
+Descripción: Fecha de la compra realizada.
+
+Observaciones: Requiere conversión a tipo fecha (as.Date()). 
+  Se puede derivar el mes, día de la semana o estacionalidad para nuevos análisis. 
+  
+  
+
+**Discount_Used:**
+
+Tipo: Binaria (TRUE/FALSE)
+
+Descripción: Indica si el cliente usó un descuento en la compra.
+
+Observaciones: Variable muy útil como factor explicativo en decisiones de compra. 
+  También buena para clustering.
+  
+  
+  
+**Customer_Loyalty_Program_Member:**
+
+Tipo: Binaria (TRUE/FALSE)
+
+Descripción: Indica si el usuario es miembro de un programa de fidelización.
+
+Observaciones: Puede explicar la frecuencia de compra o el gasto. Clave para segmentación.  
+  
+  
+  
+**Purchase_Intent:**
+
+Tipo: Categórica
+
+Descripción: Tipo de intención de compra (Need-based, Wants-based, Impulsive, etc.).
+
+Observaciones: Es una candidata a variable objetivo. También puede binarizarse para modelos supervisados.
+
+
+
+**Shipping_Preference:**
+
+Tipo: Categórica nominal
+
+Descripción: Preferencia del cliente sobre el tipo de envío (Standard, Express, No Preference).
+
+Observaciones: Puede relacionarse con urgencia, tipo de producto o perfil de cliente.
+
+
+
+
+**Time_to_Decision:**
+
+Tipo: Numérica discreta
+
+Descripción: Tiempo (en días o unidades) que tarda el usuario en tomar la decisión de compra.
+
+Observaciones: Muy útil para estudiar indecisión o urgencia. 
+  Puede correlacionarse con Purchase_Category o Research Time.
+  
+  
+  
+
+### Técnicas que se aplicarán en la práctica
+
+ **Clustering**: para identificar perfiles de usuario según comportamiento.
+ 
+- **PCA**: para simplificar el conjunto de variables numéricas.
+
+- **Preparación para clasificación supervisada** (en PRA2): predicción de `Purchase_Intent`.
+
+
+
+
+## Exploración de datos
+
+### Detectar valores nulos por columna
+
+```{r, message=FALSE, warning=FALSE}
+nulos <- sapply(ecommerce, function(x) sum(is.na(x)))
+nulos_df <- data.frame(Variable = names(nulos), Nulos = as.numeric(nulos))
+nulos_df <- nulos_df[nulos_df$Nulos > 0, ]
+
+library(knitr)
+cat(" Variables con valores nulos:\n")
+if (nrow(nulos_df) == 0) {
+  cat("No hay valores nulos en el dataset.\n")
+} else {
+  kable(nulos_df, caption = "Variables con valores nulos")
+}
+```
+### Variables con una sola categoría
+
+```{r, message=FALSE, warning=FALSE}
+# Crear resumen de niveles únicos por variable
+niveles_df <- data.frame(
+  Variable = colnames(ecommerce),
+  Tipo = sapply(ecommerce, class),
+  Niveles_unicos = sapply(ecommerce, function(x) length(unique(x)))
+)
+
+# VARIABLES CON BAJA VARIABILIDAD (SOLO 1 CATEGORÍA)
+baja_var <- niveles_df[niveles_df$Niveles_unicos == 1, ]
+
+cat(" Variables con una sola categoría:\n")
+if (nrow(baja_var) == 0) {
+  cat("Todas las variables tienen más de un valor.\n")
+} else {
+  kable(baja_var, caption = "Variables sin variabilidad (no aportan información)")
+}
+
+```
+  
+###  Duplicados en el dataset
+
+```{r, message=FALSE, warning=FALSE}
+# REGISTROS DUPLICADOS
+duplicados <- sum(duplicated(ecommerce))
+
+cat(" Total de registros duplicados en el dataset:", duplicados, "\n")
+
+```
+
+##  Resumen general del conjunto de datos
+
+El dataset utilizado en este estudio contiene información sobre usuarios que han 
+interactuado con una plataforma de comercio electrónico.
+Ha sido obtenido desde Kaggle y presenta un formato estructurado y limpio,
+ideal para análisis exploratorio y aplicación de técnicas de minería de datos.
+
+### Estructura del dataset
+
+Número total de observaciones: 1.000
+
+Número total de variables: 28 columnas
+  
+Tipo de archivo: CSV, con codificación UTF-8
+
+
+###  Calidad de los datos
+
+
+-*Valores nulos:* No se detectaron valores nulos en el dataset.
+
+-*Registros duplicados:* No se encontraron registros duplicados.
+
+-*Variables sin variabilidad:* Todas las variables presentan más de una categoría (no hay variables constantes).
+
+-*Variables con muchos niveles únicos:*
+
+    Location presenta 969 niveles → se considera irrelevante para el análisis y 
+                                    será descartada o agrupada.
+
+    Variables limpias: La variable Purchase_Amount fue convertida correctamente a
+                        formato numérico eliminando el símbolo $. 
+                        
+                        
+### Variables clave para el análisis
+
+- *Perfil de usuario:*
+
+-Age
+-Gender
+-Income_Level
+-Education_Level
+
+- *Comportamiento en la plataforma:*
+
+-Frequency_of_Purchase
+-Purchase_Amount
+-Time_Spent_on_Product_Research(hours)
+-Time_to_Decision
+
+- *Factores comerciales:*
+
+-Discount_Used
+-Customer_Loyalty_Program_Member
+-Engagement_with_Ads
+-Purchase_Channel
+-Purchase_Intent (como posible variable objetivo)
+
+
+### Visualización previa al clustering (pre-PRA2)
+
+Con el objetivo de analizar la relación entre las variables de perfil de usuario 
+y el nivel de compra (Compra_Alta), se realiza una visualización separada según el tipo de variable:
+
+Para variables numéricas (Age), se emplea una matriz de dispersión (ggpairs) que permite explorar correlaciones.
+
+Para variables categóricas (Gender, Income_Level, Education_Level), se utilizan gráficos de barras 
+(geom_bar), facilitando la comparación de proporciones de compra alta y no alta.
+
+#### Análisis de la variable numérica: Age
+
+```{r grafico_age_violin, fig.width=7, fig.height=5, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+
+# Crear datos_limpios con la variable Compra_Alta incluida
+datos_limpios <- ecommerce %>%
+  select(-Customer_ID, -Location) %>%
+  mutate(
+    Purchase_Amount = as.numeric(gsub("\\$", "", Purchase_Amount)),
+    Time_of_Purchase = as.Date(Time_of_Purchase, format = "%m/%d/%Y"),
+    Compra_Alta = ifelse(Purchase_Amount > quantile(Purchase_Amount, 0.75, na.rm = TRUE), "Sí", "No")
+  )
+
+# Crear gráfico violín
+ggplot(datos_limpios, aes(x = Compra_Alta, y = Age, fill = Compra_Alta)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +
+  geom_boxplot(width = 0.1, color = "black", fill = "white", outlier.size = 1) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Distribución de Edad según Compra Alta",
+    x = "Compra Alta",
+    y = "Edad"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+
+```
+
+
+
+Se ha utilizado un gráfico de violín para comparar la distribución de la edad (Age)
+entre los usuarios que realizaron una compra alta (Compra_Alta = Sí) y aquellos que no (Compra_Alta = No).
+
+El gráfico muestra que la edad media es algo más baja entre los compradores con gasto alto,
+y que la distribución es más dispersa en este grupo. En cambio, los usuarios
+que no realizan compras altas tienden a concentrarse en un rango más estrecho alrededor de los 35–45 años.
+
+Esta visualización es útil para detectar posibles patrones de comportamiento relacionados con la edad, 
+lo cual puede resultar relevante para la segmentación de clientes y los modelos predictivos de la PRA2.
+
+
+#### Análisis conjunto de variables categóricas del perfil de usuario
+
+*OBJETIVO:*
+
+Se han combinado en un solo panel las variables categóricas de perfil de usuario:  
+*`Gender`*, *`Income_Level`* y *`Education_Level`,* usando `ggplot2` y la librería `patchwork`.
+
+Este formato permite comparar visualmente cómo varía la proporción de **compras altas** 
+(`Compra_Alta = Sí`) entre las distintas categorías, de manera clara y sin redundancia visual.
+
+
+```{r panel_perfil_usuario_categ, fig.width=12, fig.height=4, message=FALSE, warning=FALSE}
+# Instalar y cargar librerías necesarias
+if (!require(patchwork)) install.packages("patchwork")
+library(patchwork)
+library(ggplot2)
+
+# Gráfico 1: Género
+g1 <- ggplot(datos_limpios, aes(x = Gender, fill = Compra_Alta)) +
+  geom_bar(position = "fill") +
+  labs(title = "Género", y = "Proporción relativa", x = NULL) +
+  scale_fill_brewer(palette = "Set2") +
+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Gráfico 2: Nivel de ingresos
+g2 <- ggplot(datos_limpios, aes(x = Income_Level, fill = Compra_Alta)) +
+  geom_bar(position = "fill") +
+  labs(title = "Nivel de ingresos", y = NULL, x = NULL) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal()
+
+# Gráfico 3: Nivel educativo
+g3 <- ggplot(datos_limpios, aes(x = Education_Level, fill = Compra_Alta)) +
+  geom_bar(position = "fill") +
+  labs(title = "Nivel educativo", y = NULL, x = NULL) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal()
+
+# Mostrar los tres gráficos en una fila con leyenda común
+g1 + g2 + g3 + plot_layout(ncol = 3, guides = "collect") & theme(legend.position = "bottom")
+
+
+
+
+``` 
+- **Género**:
+
+  La distribución de compras altas es relativamente uniforme entre hombres y mujeres, 
+  aunque existen algunas diferencias sutiles en categorías menos frecuentes como *Agender* o *Bigender*.
+
+- **Nivel de ingresos**: 
+
+  Se observa una mayor proporción de compras altas entre usuarios con ingresos *High*,
+  en comparación con los niveles *Low* o *Middle*.
+
+- **Nivel educativo**:
+
+  Las compras elevadas tienden a concentrarse más entre usuarios con educación superior 
+  (*Bachelor's* y *Master's*), lo que podría indicar una relación entre nivel educativo y capacidad adquisitiva.
+  
+  
+### Análisis de conjunto de  Variables de comportamiento
+
+*OBJETIVO:*
+
+-Analizar cómo varía el comportamiento de los usuarios en la plataforma en función 
+de si hicieron o no una Compra Alta (Compra_Alta = Sí/No).
+
+-Se representan las variables numéricas más relevantes del comportamiento de los usuarios en la plataforma:
+
+-Frequency_of_Purchase: frecuencia de compra
+
+-Purchase_Amount: monto total de compra
+
+-Time_Spent_on_Product_Research.hours.: tiempo dedicado a investigar productos
+
+-Time_to_Decision: tiempo que tardan en decidir
+
+-El comportamiento en la plataforma puede influir directamente en la probabilidad de realizar una compra alta:
+
+-Usuarios que compran frecuentemente pueden acumular más gasto.
+
+-Quienes investigan más o tardan más en decidir podrían mostrar patrones de compra diferentes.
+
+-El análisis exploratorio ayudará a identificar comportamientos de alto valor, útiles
+  para segmentación o predicción futura.
+
+-Se utilizará un gráfico combinado de:
+
+-Violin plots para observar la forma completa de la distribución (densidad).
+
+-Boxplots superpuestos para destacar mediana, cuartiles y valores atípicos.
+
+-Cada variable se representará en un panel distinto mediante facet_wrap.
+
+-Los datos se transformarán al formato "largo" (pivot_longer) para poder graficar
+  varias variables a la vez de forma ordenada.
+
+```{r panel_comportamiento_plataforma, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+# Cargar librerías necesarias
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# 1. Selección de variables de comportamiento relevantes
+comportamiento <- datos_limpios %>%
+  select(Compra_Alta,
+         Frequency_of_Purchase,
+         Purchase_Amount,
+         Time_Spent_on_Product_Research.hours.,
+         Time_to_Decision)
+
+# 2. Reestructurar datos a formato largo
+comportamiento_long <- comportamiento %>%
+  pivot_longer(-Compra_Alta, names_to = "Variable", values_to = "Valor")
+
+# 3. Crear gráfico violin + boxplot facetado
+ggplot(comportamiento_long, aes(x = Compra_Alta, y = Valor, fill = Compra_Alta)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +
+  geom_boxplot(width = 0.1, color = "black", outlier.size = 0.5) +
+  facet_wrap(~ Variable, scales = "free_y", ncol = 2) +
+  scale_fill_manual(values = c("lightblue", "salmon"),
+                    name = "¿Compra Alta?",
+                    labels = c("No", "Sí")) +
+  labs(title = "Distribución del comportamiento en la plataforma según Compra Alta",
+       x = "¿Compra Alta?",
+       y = "Valor de la variable") +
+  theme_minimal()
+
+
+
+``` 
+*Que resultado se obtiene?*
+
+- Se generan **cuatro gráficos violin + boxplot**, uno por cada variable.
+- Se comparan las distribuciones de cada variable entre usuarios con **Compra Alta = Sí** y **Compra Alta = No**.
+- Cada panel permite identificar diferencias en la dispersión, tendencia y concentración de valores.
+
+
+*Interpretación del resultado*
+
+- **Frequency_of_Purchase:** 
+
+Se observa que los usuarios que realizan una Compra Alta tienden a comprar con 
+una frecuencia ligeramente mayor, aunque las diferencias no son muy extremas.
+
+- **Purchase_Amount:** 
+
+Como era esperado (ya que la variable se utilizó para definir Compra Alta), 
+los usuarios que realizaron una compra alta tienen montos de compra significativamente más altos.
+
+- **Time_Spent_on_Product_Research:** 
+
+No se detectan diferencias notables en el tiempo de investigación entre ambos grupos, 
+lo que sugiere que invertir más tiempo en investigar no necesariamente lleva a compras mayores.
+
+- **Time_to_Decision:**
+
+Los usuarios de Compra Alta no muestran tiempos de decisión sustancialmente distintos a los de Compra No Alta.
+
+**Conclusión**: 
+
+El comportamiento de frecuencia de compra y el monto de compra son factores más
+claramente diferenciadores entre usuarios de alto y bajo gasto, mientras que el 
+tiempo invertido en investigación o decisión no parece tener una influencia determinante.
+
+
+### Anlanisis de conjunto de  Variables de Factores comerciales
+
+*OBJETIVO:*
+
+El objetivo de esta sección es analizar cómo se distribuyen las principales variables 
+comerciales en función de si el usuario realizó una Compra Alta (Compra_Alta = "Sí") o no.
+
+Las variables estudiadas son:
+
+**Discount_Used:** Si el usuario utilizó o no un descuento en su compra.
+
+**Customer_Loyalty_Program_Member:** Pertenencia a un programa de fidelización.
+
+**Engagement_with_Ads:** Grado de interacción con anuncios.
+
+**Purchase_Channel:** Canal utilizado para la compra (Online, In-Store, etc.).
+
+Estas variables representan comportamientos comerciales que pueden estar asociados a un mayor nivel de gasto.
+Entender su distribución ayudará a:
+
+-Detectar factores que influyen en compras elevadas.
+
+-Seleccionar variables relevantes para futuros modelos de clasificación o segmentación.
+
+-Mejorar el conocimiento del perfil de comprador de alto valor.
+
+-Se creará un gráfico de barras facetado (facet_wrap) que mostrará:
+
+-La distribución proporcional (geom_bar(position = "fill")) de usuarios que 
+realizaron o no una compra alta (Compra_Alta).
+
+-Un panel distinto para cada variable comercial.
+
+-Las barras se mostrarán apiladas por color (Sí/No).
+
+-Se ajustarán los tipos de datos para evitar errores (conversión a character).
+
+**Nota técnica:**
+
+
+Antes de aplicar pivot_longer(), se convertirán las variables a tipo character para 
+evitar errores de combinación de tipos (logical, character).
+Esta conversión es necesaria para la visualización.
+Para análisis futuros (clustering o modelado), si se requiere, se 
+puede reconvertir fácilmente a factor o logical.
+
+
+
+```{r panel_factores_comerciales, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+# Cargar librerías necesarias
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# 1. Selección de variables relevantes
+factores <- datos_limpios %>%
+  select(Compra_Alta, Discount_Used, Customer_Loyalty_Program_Member,
+         Engagement_with_Ads, Purchase_Channel) %>%
+  mutate(across(everything(), as.character))  # 2. Conversión a character para evitar errores en pivot_longer
+
+# 3. Reestructurar datos a formato largo
+factores_long <- factores %>%
+  pivot_longer(-Compra_Alta, names_to = "Variable", values_to = "Valor")
+
+# 4. Crear gráfico de barras apiladas y facetadas
+ggplot(factores_long, aes(x = Valor, fill = Compra_Alta)) +
+  geom_bar(position = "fill") +
+  facet_wrap(~ Variable, scales = "free_x", ncol = 2) +
+  scale_fill_manual(values = c("lightblue", "salmon"),
+                    name = "¿Compra Alta?",
+                    labels = c("No", "Sí")) +
+  labs(title = "Distribución de Factores Comerciales según Compra Alta",
+       x = "Categoría",
+       y = "Proporción",
+       fill = "Compra Alta") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+``` 
+**Que resultado se obtiene?**
+
+Se genera un conjunto de **cuatro gráficos de barras**.
+- Cada gráfico muestra la **proporción** de usuarios (`Sí` o `No` en Compra Alta) 
+  para cada categoría de las variables comerciales.
+- El gráfico permite observar visualmente si alguna categoría está más asociada con compras altas.
+
+
+*Interpretación del resultado*
+
+**Discount_Used:**
+Los usuarios que utilizaron descuentos tienden a tener una proporción ligeramente mayor de compras altas.
+
+**Customer_Loyalty_Program_Member:** 
+Se observa una mayor proporción de compras altas entre los miembros de programas de fidelización.
+
+**Engagement_with_Ads:**
+Los usuarios con mayor interacción publicitaria parecen tener una leve tendencia hacia mayores compras, aunque la    
+  diferencia no es muy marcada.
+
+**Purchase_Channel:**
+No se aprecia una diferencia muy significativa en la proporción de compras altas según el canal de compra utilizado.
+
+Este análisis sugiere que el **uso de descuentos** y la **pertenencia a programas de fidelización** 
+son factores comerciales que podrían asociarse a un mayor nivel de gasto.
+
+
+
+# Preparación de los datos
+
+## Selección de datos
+
+*Objetivo:*
+
+Eliminar variables que no aportan valor analítico y quedarnos con las que serán
+útiles para clustering, PCA y análisis posterior.
+
+*Decisiones tomadas:*
+
+Se han eliminado dos columnas del dataset original:
+
+-*Customer_ID:* es un identificador único sin ningún valor predictivo o explicativo. 
+                Solo sirve para diferenciar registros.
+
+-*Location:* contiene 969 valores distintos (uno por usuario), lo que la convierte 
+              en una variable casi única por registro.
+              No es adecuada para análisis sin una transformación avanzada como agrupamiento geográfico.
+
+Se han conservado las variables relevantes según los objetivos definidos en la Fase 1 y 2.
+  
+Este paso permite reducir ruido y simplificar el dataset, facilitando el enfoque en
+las variables realmente útiles para el análisis. 
+
+
+```{r, message=FALSE, warning=FALSE}
+
+# Crear copia del dataset original
+datos_limpios <- ecommerce
+
+# Eliminar columnas irrelevantes
+datos_limpios <- datos_limpios %>%
+  select(-Customer_ID, -Location)
+
+#Ver nombres de columnas DESPUÉS de eliminar
+cat("\n Columnas después de eliminar 'Customer_ID' y 'Location':\n")
+print(colnames(datos_limpios))
+
+#Verificar si las columnas eliminadas ya no existen
+cat("\n¿'Customer_ID' sigue en el dataset?: ", "Customer_ID" %in% colnames(datos_limpios), "\n")
+cat("¿'Location' sigue en el dataset?: ", "Location" %in% colnames(datos_limpios), "\n")
+
+```   
+  
+## Limìpeza e integración de datos
+
+Garantizar la consistencia y validez del contenido del dataset corrigiendo errores 
+de formato y asegurando que no haya problemas estructurales.
+
+*Decisiones tomadas:*
+
+### Conversión de *Purchase_Amount* a formato numérico:
+
+*Objetivo:*
+
+  La variable Purchase_Amount venía originalmente en formato texto debido a la presencia del símbolo $.
+  Se ha aplicado una limpieza mediante *gsub()* para eliminar dicho símbolo y 
+  posteriormente se ha convertido a numérico.
+  A continuación se muestra el resumen estadístico tras la transformación, 
+  lo cual confirma que la variable ahora puede utilizarse en operaciones numéricas:
+  
+Mostrar variable original:  
+  
+```{r, message=FALSE, warning=FALSE}
+head(ecommerce$Purchase_Amount)
+```
+Transformamos la variable:
+
+```{r, message=FALSE, warning=FALSE}
+#  Eliminar símbolo $ y convertir a numérico
+datos_limpios$Purchase_Amount <- as.numeric(gsub("[$]", "", datos_limpios$Purchase_Amount))
+
+#  Mostrar resumen estadístico de la variable después de la transformación
+head(datos_limpios$Purchase_Amount)
+summary(datos_limpios$Purchase_Amount)
+```  
+### Verificación de valores nulos y duplicados:
+
+*Objetivo:*
+
+  Asegurarnos de que el dataset no contenga registros incompletos o duplicados 
+  que puedan alterar el análisis.
+
+```{r, message=FALSE, warning=FALSE}
+#  Ver número total de registros
+cat(" Total de registros en el dataset:", nrow(datos_limpios), "\n\n")
+
+#  Verificación de valores nulos por columna
+cat(" Comprobación de valores nulos por variable:\n")
+nulos <- sapply(datos_limpios, function(x) sum(is.na(x)))
+print(nulos[nulos > 0])
+
+if (all(nulos == 0)) {
+  cat("No se encontraron valores nulos en el dataset.\n\n")
+}
+
+# Verificación de registros duplicados
+duplicados <- sum(duplicated(datos_limpios))
+cat(" Número de registros duplicados en el dataset:", duplicados, "\n")
+
+if (duplicados == 0) {
+  cat("No hay registros duplicados.\n")
+}
+
+
+``` 
+Se ha revisado la presencia de valores nulos y registros duplicados en el dataset.
+Estos dos tipos de errores pueden generar resultados incorrectos o sesgados en el modelado,
+por lo que es imprescindible verificarlos y corregirlos si se detectan.
+
+
+### Transformación de la variable Time_of_Purchase
+
+*Objetivo:*
+
+Convertir la variable Time_of_Purchase de texto (character) al formato correcto de 
+fecha (Date), para poder:
+
+Crear nuevas variables derivadas si se desea (mes, día de la semana…)
+
+Utilizarla en análisis temporales
+
+Evitar errores en funciones que requieran formato de fecha
+
+
+
+```{r, message=FALSE, warning=FALSE}
+# Ver primeros valores originales y tipo de dato
+cat(" Valores originales de 'Time_of_Purchase':\n")
+print(head(datos_limpios$Time_of_Purchase))
+
+cat("\n Tipo de dato antes de la transformación:\n")
+print(class(datos_limpios$Time_of_Purchase))
+
+# Conversión a formato fecha
+datos_limpios$Time_of_Purchase <- as.Date(datos_limpios$Time_of_Purchase, format = "%m/%d/%Y")
+
+
+# Ver primeros valores después de la conversión
+cat("\n Valores después de la conversión:\n")
+print(head(datos_limpios$Time_of_Purchase))
+
+cat("\n Tipo de dato después de la transformación:\n")
+print(class(datos_limpios$Time_of_Purchase))
+
+
+```  
+Tras realizar la conversión de la variable *Time_of_Purchase* al formato Date, 
+vamos a verificar la presencia de valores nulos (NA).
+Esta comprobación es esencial para asegurar que no se haya producido pérdida de
+información durante el proceso.
+A continuación, se muestra el número de valores faltantes, y en caso de haberlos, 
+se listan los registros afectados. 
+
+```{r, message=FALSE, warning=FALSE}
+#  Comprobar si hay valores NA en la variable Time_of_Purchase
+cat(" Número de valores nulos en 'Time_of_Purchase':\n")
+nulos_fecha <- sum(is.na(datos_limpios$Time_of_Purchase))
+print(nulos_fecha)
+
+#  Mostrar los valores nulos si existen
+if (nulos_fecha > 0) {
+  cat("\n Registros con NA en 'Time_of_Purchase':\n")
+  print(datos_limpios[is.na(datos_limpios$Time_of_Purchase), ])
+} else {
+  cat("No se encontraron valores nulos en 'Time_of_Purchase'.\n")
+}
+
+
+```  
+### Detección de valores atípicos (outliers)
+
+*Objetivo:*
+
+Detectar valores extremos en las variables numéricas del conjunto de datos que podrían:
+
+- Distorsionar análisis estadísticos
+
+- Afectar la eficacia de algoritmos como clustering o PCA
+
+- Representar errores, casos excepcionales o información valiosa
+
+Este paso forma parte de la limpieza avanzada de datos dentro de la Fase 3 (Preparación)
+y se centra en el diagnóstico, no necesariamente en la eliminación de valores aún.
+
+*¿Qué variables se van a analizar?*
+
+Age
+
+Purchase_Amount
+
+Frequency_of_Purchase
+
+Customer_Satisfaction
+
+Return_Rate
+
+Time_to_Decision
+
+Time_Spent_on_Product_Research(hours)
+
+
+- Resumen estadístico con summary():
+
+```{r, message=FALSE, warning=FALSE}
+# Seleccionar variables numéricas
+variables_numericas <- datos_limpios %>%
+  select(Age, Purchase_Amount, Frequency_of_Purchase,
+         Customer_Satisfaction, Return_Rate, Time_to_Decision,
+         Time_Spent_on_Product_Research.hours.)
+
+# Mostrar resumen estadístico
+summary(variables_numericas)
+
+
+``` 
+-Boxplots para visualización:
+
+
+```{r, message=FALSE, warning=FALSE}
+# Convertir a formato largo para usar facet_wrap()
+library(tidyr)
+library(ggplot2)
+
+datos_long <- pivot_longer(variables_numericas,
+                           cols = everything(),
+                           names_to = "Variable",
+                           values_to = "Valor")
+
+# Crear boxplots por variable
+ggplot(datos_long, aes(x = Variable, y = Valor)) +
+  geom_boxplot(fill = "tomato", alpha = 0.7) +
+  labs(title = "Detección de valores atípicos en variables numéricas",
+       x = "Variable", y = "Valor") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+
+``` 
+Se han representado las variables numéricas del conjunto de datos mediante diagramas de caja (boxplots) 
+con el objetivo de identificar la presencia de valores atípicos (outliers).
+
+En el gráfico se puede observar que:
+
+La variable *Purchase_Amount* muestra una distribución más amplia y presenta valores
+atípicos visibles en su rango superior. Esto es habitual en montos de compra, ya
+que algunos usuarios pueden gastar cantidades significativamente mayores que la media.
+
+El resto de variables (Age, Customer_Satisfaction, Frequency_of_Purchase, Return_Rate, 
+Time_Spent_on_Product_Research.hours., Time_to_Decision) presentan distribuciones bastante compactas, 
+sin valores extremos evidentes o con escasa dispersión.
+
+En esta fase se ha optado únicamente por detectar los valores atípicos, sin eliminarlos ni 
+transformarlos, ya que esto dependerá de su impacto en las técnicas que se apliquen posteriormente 
+(PCA, clustering). No se descarta realizar una gestión específica de outliers si en 
+la fase de modelado se observa que afectan significativamente a los resultados.
+
+
+
+Además de la visualización mediante boxplots, se ha realizado una detección numérica
+de outliers utilizando el criterio del rango intercuartílico (IQR).
+Este método considera como valores atípicos aquellos que se encuentran 
+por debajo de Q1 - 1.5 * IQR o por encima de Q3 + 1.5 * IQR.
+
+A continuación se muestra una tabla con el número de outliers detectados en cada una de las variables numéricas:
+
+```{r, message=FALSE, warning=FALSE}
+
+# Selección de variables numéricas
+vars <- datos_limpios %>%
+  select(Age, Purchase_Amount, Frequency_of_Purchase,
+         Customer_Satisfaction, Return_Rate, Time_to_Decision,
+         Time_Spent_on_Product_Research.hours.)
+
+# Función para contar outliers según IQR
+contar_outliers <- function(x) {
+  q1 <- quantile(x, 0.25, na.rm = TRUE)
+  q3 <- quantile(x, 0.75, na.rm = TRUE)
+  iqr <- q3 - q1
+  sum(x < (q1 - 1.5 * iqr) | x > (q3 + 1.5 * iqr), na.rm = TRUE)
+}
+
+# Aplicar a cada variable
+outliers_por_variable <- sapply(vars, contar_outliers)
+
+# Mostrar en forma de tabla
+outliers_df <- data.frame(
+  Variable = names(outliers_por_variable),
+  Outliers = outliers_por_variable
+)
+
+# Mostrar tabla formateada
+library(knitr)
+kable(outliers_df, caption = "Número de outliers detectados por variable (criterio IQR)")
+
+
+``` 
+### Construcción de nuevas variables
+
+*Objetivo:*
+
+Crear nuevas variables derivadas de *Time_of_Purchase* que permitan enriquecer el análisis posterior, 
+tanto en clustering como en modelos supervisados.
+
+El comportamiento del usuario puede variar según el momento en que realiza la compra,
+por lo tanto, disponer de información como el mes o el día de la semana puede revelar patrones importantes:
+
+¿Compra más gente en determinados meses?
+
+¿Existen diferencias entre compras entre semana y en fin de semana?
+
+Estas nuevas variables permiten explorar aspectos temporales del comportamiento del consumidor,
+que no están presentes explícitamente en el dataset original,
+pero que pueden influir en la intención de compra.
+
+*Qué vamos a hacer*
+
+Derivar una variable Mes_Compra a partir de Time_of_Purchase
+
+- Nos permitirá ver si hay estacionalidad en las compras.
+
+Derivar una variable Dia_Semana a partir de Time_of_Purchase
+
+- Nos permitirá ver si el día de la semana influye en la compra.
+
+Verificaremos que las variables se han creado correctamente.
+
+1. Crear una nueva variable llamada Mes_Compra a partir de Time_of_Purchase, 
+que indique el mes en el que se realizó la compra:
+
+  El mes de compra puede revelar patrones estacionales o periodos de mayor actividad.
+  Por ejemplo, puede haber más compras en diciembre (Navidad),   rebajas, vuelta al cole, etc. 
+  Esta variable puede ser útil tanto para análisis exploratorio como para clustering o clasificación en la PRA2.
+
+
+Se ha creado una nueva variable Mes_Compra a partir de Time_of_Purchase,
+con el objetivo de capturar posibles patrones estacionales.
+Esta variable indica el mes en que se realizó cada compra, en formato textual.
+A continuación se muestran los primeros valores y la frecuencia de compras por mes.
+
+```{r, message=FALSE, warning=FALSE}
+# Crear la variable 'Mes_Compra' desde la fecha
+datos_limpios$Mes_Compra <- format(datos_limpios$Time_of_Purchase, "%B")  # Nombre del mes
+
+# Mostrar los primeros valores para verificar
+cat("Primeros valores de 'Mes_Compra':\n")
+print(head(datos_limpios$Mes_Compra))
+
+# Mostrar frecuencia de meses
+cat("\nFrecuencia de compras por mes:\n")
+print(table(datos_limpios$Mes_Compra))
+
+
+``` 
+Crear una nueva variable llamada Dia_Semana que contenga el día de la semana en el que se realizó la compra 
+(lunes, martes, etc.), a partir de la variable Time_of_Purchase.
+
+El día de la semana puede influir en el comportamiento del consumidor. Por ejemplo:
+
+Las compras impulsivas pueden concentrarse en fines de semana
+
+Las compras racionales pueden hacerse más entre semana
+
+Puede ayudar en la segmentación de usuarios o en modelos que consideren hábitos de compra
+
+Incluir esta variable puede mejorar la capacidad de los modelos de clustering o 
+clasificación para identificar patrones.
+
+Se ha creado una nueva variable Dia_Semana a partir de Time_of_Purchase,
+con el objetivo de capturar posibles patrones relacionados con el día de la semana en el que se realiza la compra.
+Esta variable puede ser especialmente útil para detectar comportamientos diferentes
+entre compras de lunes a viernes y durante el fin de semana.
+A continuación se muestran los primeros valores y la distribución total de compras por día.
+
+
+```{r, message=FALSE, warning=FALSE}
+
+# Crear la variable 'Dia_Semana'
+datos_limpios$Dia_Semana <- weekdays(datos_limpios$Time_of_Purchase)
+
+# Verificar primeros valores
+cat("Primeros valores de 'Dia_Semana':\n")
+print(head(datos_limpios$Dia_Semana))
+
+# Verificar frecuencia de días
+cat("\nFrecuencia de compras por día de la semana:\n")
+print(table(datos_limpios$Dia_Semana))
+
+
+``` 
+A continucación, vamos a crear 2 variables booleanas que nos pueden ayudar
+
+-*Variable 1: Compra_FinDe*:
+
+Una nueva variable binaria que indica si la compra se realizó en fin de semana (sábado o domingo).
+Tendrá valores "Sí" o "No".
+  
+El día de la semana puede influir en el comportamiento de compra:
+
+Las compras del fin de semana pueden ser más impulsivas
+
+Las del lunes a viernes pueden estar más planificadas
+
+Esto puede resultar útil en el clustering o en la clasificación de intenciones de compra.
+
+Usamos la variable Dia_Semana (ya construida) para comprobar si el valor corresponde a "sábado" o "domingo".
+
+Se ha creado la variable Compra_FinDe, que indica si la compra fue realizada 
+durante el fin de semana (sábado o domingo).
+
+Esta variable permite segmentar a los usuarios según su comportamiento temporal
+y puede ser útil para identificar diferencias entre perfiles.
+A continuación se muestran ejemplos de valores y su distribución.
+  
+```{r, message=FALSE, warning=FALSE}
+# Crear variable Compra_FinDe
+datos_limpios$Compra_FinDe <- ifelse(datos_limpios$Dia_Semana %in% c("sábado", "domingo"), "Sí", "No")
+
+# Verificar primeros valores
+cat("Primeros valores de 'Compra_FinDe':\n")
+print(head(datos_limpios$Compra_FinDe))
+
+# Verificar frecuencia
+cat("\nFrecuencia de compras en fin de semana:\n")
+print(table(datos_limpios$Compra_FinDe))
+
+
+``` 
+-Variable 2: Compra_Alta
+
+Una nueva variable binaria que indica si el usuario realizó una compra alta, 
+definida como una compra cuyo valor de Purchase_Amount está por encima del tercer cuartil (Q3) 
+del conjunto de datos.
+
+Permite distinguir entre usuarios de gasto alto y bajo, lo cual puede influir en su fidelidad,
+sensibilidad al descuento o segmentación comercial.
+
+Se calcula el valor de Q3 (percentil 75) de Purchase_Amount, y se asigna "Sí"
+a las compras por encima de ese valor, "No" al resto.
+
+La variable Compra_Alta identifica si una compra supera el umbral del tercer cuartil (Q3) de Purchase_Amount.
+Esta clasificación binaria permite segmentar a los usuarios según su nivel de gasto, 
+lo cual puede resultar útil para modelos de clustering o análisis de comportamiento.
+
+El umbral aplicado se ha calculado sobre el 75% percentil y se indica a continuación
+junto con la distribución obtenida.
+
+
+```{r, message=FALSE, warning=FALSE}
+# Calcular el umbral alto de compra
+q3 <- quantile(datos_limpios$Purchase_Amount, 0.75, na.rm = TRUE)
+
+# Crear variable Compra_Alta
+datos_limpios$Compra_Alta <- ifelse(datos_limpios$Purchase_Amount > q3, "Sí", "No")
+
+# Verificar primeros valores
+cat("Primeros valores de 'Compra_Alta':\n")
+print(head(datos_limpios$Compra_Alta))
+
+# Verificar frecuencia
+cat("\nFrecuencia de compras altas:\n")
+print(table(datos_limpios$Compra_Alta))
+
+# Mostrar el umbral usado
+cat("\nUmbral de compra alta (Q3):", q3, "\n")
+
+
+``` 
+### Discretización de Age
+
+Transformar la variable numérica Age en una variable categórica llamada Grupo_Edad,
+clasificando a los usuarios en grupos de edad: por ejemplo "Joven", "Adulto" y "Mayor".
+
+Discretizar Age permite:
+
+Simplificar el análisis al trabajar con categorías más comprensibles
+
+Detectar patrones por grupo de edad más fácilmente
+
+Usar la variable en modelos o gráficos que funcionan mejor con factores
+
+Evitar la sensibilidad a pequeñas variaciones numéricas
+
+Esta transformación puede ser útil para segmentar clientes en perfiles sociodemográficos.
+
+Usaremos rango de edad por puntos de corte. En este caso:
+
+Joven: menores de 30 años
+
+Adulto: entre 30 y 45 años
+
+Mayor: mayores de 45 años
+
+Estos rangos pueden ajustarse, pero son razonables para interpretar comportamiento de compra.
+
+Se ha discretizado la variable Age en una nueva variable categórica llamada Grupo_Edad,
+con tres niveles: "Joven", "Adulto" y "Mayor".
+Esta transformación permite segmentar el análisis por tramos de edad, facilitando
+la interpretación y el uso en algoritmos que requieren variables categóricas.
+Los cortes utilizados fueron:
+
+Menores de 30 años: "Joven"
+
+Entre 30 y 45 años: "Adulto"
+
+Mayores de 45 años: "Mayor"
+A continuación se muestran los primeros valores de la variable y la distribución completa de usuarios por grupo.
+
+```{r, message=FALSE, warning=FALSE}
+# Crear nueva variable categórica 'Grupo_Edad' a partir de 'Age'
+datos_limpios$Grupo_Edad <- cut(
+  datos_limpios$Age,
+  breaks = c(-Inf, 29, 45, Inf),
+  labels = c("Joven", "Adulto", "Mayor")
+)
+
+# Verificar primeros valores
+cat("Primeros valores de 'Grupo_Edad':\n")
+print(head(datos_limpios[, c("Age", "Grupo_Edad")]))
+
+# Verificar distribución
+cat("\nDistribución de usuarios por grupo de edad:\n")
+print(table(datos_limpios$Grupo_Edad))
+
+
+``` 
+
+### Disdcretización Customer_Satisfaction
+
+Vamos a observar la variable  Customer_Satisfaction: 
+
+```{r, message=FALSE, warning=FALSE}
+# Resumen estadístico
+cat("Resumen estadístico de 'Customer_Satisfaction':\n")
+summary(datos_limpios$Customer_Satisfaction)
+
+# Frecuencia de cada valor
+cat("\nFrecuencia de valores en 'Customer_Satisfaction':\n")
+print(table(datos_limpios$Customer_Satisfaction))
+
+# Histograma simple
+library(ggplot2)
+ggplot(datos_limpios, aes(x = Customer_Satisfaction)) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Distribución de la satisfacción del cliente", x = "Satisfacción", y = "Frecuencia") +
+  theme_minimal()
+
+
+
+``` 
+Observaciones del gráfico:
+
+La satisfacción del cliente está medida del 1 al 10.
+
+No hay concentraciones extremas ni sesgos fuertes.
+
+La variable está distribuida de manera bastante equilibrada, lo cual es ideal para discretizar en niveles interpretables.
+
+ Propuesta de discretización:
+ 
+Crear una nueva variable *Nivel_Satisfaccion* con tres grupos:
+
+Baja satisfacción: 1 a 3
+
+Media satisfacción: 4 a 7
+
+Alta satisfacción: 8 a 10
+
+Estos rangos son fáciles de interpretar y están alineados con lo que suele hacerse en encuestas de valoración. 
+
+La variable Customer_Satisfaction se ha discretizado en una nueva variable categórica 
+llamada Nivel_Satisfaccion, con los niveles "Baja", "Media" y "Alta".
+Esta transformación facilita la interpretación y permite comparar segmentos de
+clientes según su nivel de satisfacción.
+
+A continuación se muestra la distribución de registros por nivel.
+
+```{r, message=FALSE, warning=FALSE}
+# Crear la variable categórica 'Nivel_Satisfaccion'
+datos_limpios$Nivel_Satisfaccion <- cut(
+  datos_limpios$Customer_Satisfaction,
+  breaks = c(-Inf, 3, 7, Inf),
+  labels = c("Baja", "Media", "Alta")
+)
+
+# Verificar primeros valores
+cat("Primeros valores de 'Nivel_Satisfaccion':\n")
+print(head(datos_limpios[, c("Customer_Satisfaction", "Nivel_Satisfaccion")]))
+
+# Verificar distribución
+cat("\nDistribución por nivel de satisfacción:\n")
+print(table(datos_limpios$Nivel_Satisfaccion))
+
+
+``` 
+
+
+### VISUALIZAR EL CONJUNTOD DE DATOS PREPORCESADO
+
+Antes de proceder a la normalización y selección final de variables para aplicar técnicas de modelado, 
+se ha revisado el conjunto de datos completo.
+A continuación se muestran las primeras filas, los nombres de las columnas y la
+estructura del dataset con las nuevas variables construidas durante la fase de preparación.
+
+```{r, message=FALSE, warning=FALSE}
+# Ver primeras filas del dataset completo con variables nuevas
+head(datos_limpios)
+
+# Mostrar todas las variables disponibles
+colnames(datos_limpios)
+
+
+# Ver estructura general del dataset
+str(datos_limpios)
+
+
+``` 
+
+# PCA
+
+## ¿Qué es PCA y para qué sirve?
+
+PCA (Análisis de Componentes Principales) es una técnica para reducir la 
+dimensionalidad de un dataset con muchas variables numéricas, sin perder (demasiada) información.
+
+Resumir la información de varias variables en menos componentes
+
+Detectar patrones o agrupaciones en los datos
+
+Preparar un espacio reducido para hacer clustering 
+
+
+Pasos que vamos a seguir:
+
+1. Aplicar PCA con prcomp()
+2. Ver cuánta varianza explica cada componente
+3. Graficar la varianza acumulada
+4. Ver qué variables están más relacionadas con cada componente
+5. Visualizar los datos proyectados en el nuevo espacio
+
+
+## Aplicar PCA con prcomp()
+
+Se ha seleccionado un subconjunto de variables numéricas relevantes del dataset, 
+y se han normalizado utilizando la función scale() de R.
+Posteriormente, se ha aplicado el Análisis de Componentes Principales (PCA) 
+mediante la función prcomp() para reducir la dimensionalidad y extraer los componentes principales.
+A continuación se muestra el resumen del PCA, que incluye la proporción de varianza explicada por cada componente.
+
+
+```{r, message=FALSE, warning=FALSE}
+# 1. Seleccionar variables numéricas relevantes
+vars_numericas <- datos_limpios %>%
+  select(Age, Purchase_Amount, Frequency_of_Purchase,
+         Customer_Satisfaction, Return_Rate, Time_to_Decision,
+         Time_Spent_on_Product_Research.hours.)
+
+# 2. Normalizar las variables numéricas (media 0, desviación estándar 1)
+vars_numericas_norm <- scale(vars_numericas)
+
+# 3. Aplicar PCA sobre los datos normalizados
+pca_resultado <- prcomp(vars_numericas_norm, center = FALSE, scale. = FALSE)
+
+# 4. Ver resumen del PCA (varianza explicada por cada componente)
+summary(pca_resultado)
+
+
+``` 
+
+```{r, message=FALSE, warning=FALSE}
+
+# Extraer la proporción de varianza explicada
+varianza_explicada <- summary(pca_resultado)$importance[2, ]
+varianza_acumulada <- summary(pca_resultado)$importance[3, ]
+
+# Crear un data frame con los resultados
+df_pca <- data.frame(
+  Componente = paste0("PC", 1:length(varianza_explicada)),
+  Varianza = varianza_explicada,
+  Acumulada = varianza_acumulada
+)
+
+# Gráfico de barras: varianza explicada individual
+library(ggplot2)
+ggplot(df_pca, aes(x = Componente, y = Varianza)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_text(aes(label = round(Varianza * 100, 1)), vjust = -0.5, size = 3) +
+  labs(title = "Varianza explicada por componente principal",
+       y = "Proporción de varianza",
+       x = "Componente") +
+  theme_minimal()
+
+
+``` 
+El gráfico muestra la varianza acumulada explicada por los componentes principales obtenidos mediante PCA.
+Se conservarán los cinco primeros componentes, ya que explican más del 70% de la
+variabilidad total del conjunto de datos.
+Esta selección permite reducir la dimensionalidad del dataset manteniendo la mayor 
+parte de la información original.
+Los componentes seleccionados se utilizarán como base para la aplicación de técnicas 
+no supervisadas en la siguiente fase del análisis.
+el dataset sin perder demasiada información.
+
+
+
+
+
+
+
+```{r, message=FALSE, warning=FALSE}
+
+# Extraer proporciones del objeto PCA
+varianza_explicada <- summary(pca_resultado)$importance[2, ]
+varianza_acumulada <- summary(pca_resultado)$importance[3, ]
+
+# Crear un data frame con los resultados
+df_pca <- data.frame(
+  Componente = paste0("PC", 1:length(varianza_explicada)),
+  Varianza = varianza_explicada,
+  Acumulada = varianza_acumulada
+)
+
+# Asegurar que ggplot2 está cargado
+library(ggplot2)
+
+# Gráfico 2: Varianza acumulada
+grafico2 <- ggplot(df_pca, aes(x = as.numeric(gsub("PC", "", Componente)), y = Acumulada)) +
+  geom_line(color = "darkgreen") +
+  geom_point(color = "darkgreen", size = 2) +
+  geom_text(aes(label = paste0(round(Acumulada * 100, 1), "%")), vjust = -0.5, size = 3) +
+  scale_x_continuous(breaks = 1:nrow(df_pca)) +
+  labs(title = "Varianza acumulada por componentes",
+       x = "Número de componentes", y = "Varianza acumulada") +
+  theme_minimal()
+
+# Mostrar gráficos
+print(grafico2)
+
+
+``` 
+### Interpretación de la varianza explicada y acumulada
+
+El Análisis de Componentes Principales (PCA) transforma las variables originales
+en un conjunto de nuevos ejes (componentes principales) ordenados según la cantidad de
+información (varianza) que explican del conjunto de datos.
+
+Existen dos formas de interpretar esta información:
+
+#### 1. Varianza explicada por componente
+
+Esta métrica indica **cuánta información aporta individualmente cada componente**.
+Por ejemplo, el primer componente (PC1) puede explicar un 15% de la variabilidad total, 
+el segundo (PC2) un 14%, y así sucesivamente.  
+Este valor permite **comparar la importancia relativa entre componentes**, pero no ayuda
+a decidir directamente cuántos conservar.
+
+#### 2. Varianza acumulada
+
+La varianza acumulada indica **la suma de información total** explicada por un conjunto de componentes.  
+Por ejemplo, al sumar los cinco primeros componentes, se puede alcanzar más del 70% de
+la varianza total del conjunto de datos.  
+Este valor es clave para **decidir cuántos componentes conservar**, 
+ya que permite identificar un umbral de información mínima deseada (por ejemplo, 70% o 80%).
+
+---
+
+En esta práctica, se ha optado por utilizar **la varianza acumulada** como criterio de selección.  
+El gráfico correspondiente muestra cómo se incrementa la varianza explicada a medida que se añaden más componentes.
+
+Se ha decidido conservar **los cinco primeros componentes**, ya que juntos explican
+**más del 70% de la variabilidad total** del conjunto de datos, lo que permite reducir 
+la dimensionalidad de forma eficiente sin perder información relevante.
+
+
+### Visualizar datos proyectados
+#### Análisis de la proyección PCA
+
+Esto permite detectar si existen agrupaciones naturales, patrones o separaciones entre observaciones.
+
+Aunque aún no hemos aplicado clustering, esta proyección nos da una idea visual
+previa de la estructura de los datos en el nuevo espacio reducido.
+
+
+
+```{r, message=FALSE, warning=FALSE}
+
+# Crear data frame con las coordenadas de los individuos en los dos primeros componentes
+pca_coords <- as.data.frame(pca_resultado$x[, 1:2])
+
+# Visualización de la proyección
+library(ggplot2)
+ggplot(pca_coords, aes(x = PC1, y = PC2)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  labs(title = "Proyección de los datos en el espacio PC1-PC2",
+       x = "Componente Principal 1 (PC1)",
+       y = "Componente Principal 2 (PC2)") +
+  theme_minimal()
+
+
+``` 
+Aunque en el análisis se han conservado los cinco primeros componentes principales 
+por su capacidad de explicar más del 70% de la varianza del conjunto de datos, 
+la visualización en plano se realiza únicamente con los dos primeros (PC1 y PC2).
+Esta elección responde a una limitación gráfica, ya que solo se pueden representar dos dimensiones 
+simultáneamente en un gráfico de dispersión.
+PC1 y PC2 son los componentes que, individualmente, capturan mayor cantidad de
+información y permiten observar posibles agrupaciones de forma preliminar.
+
+Una vez seleccionados los componentes principales más representativos (PC1 y PC2),
+se ha generado una visualización de los datos proyectados sobre este nuevo espacio bidimensional.
+
+El objetivo de esta representación es observar si existen agrupaciones naturales
+o estructuras latentes en los datos que no eran visibles en el espacio original.
+Aunque en esta fase aún no se han aplicado técnicas de clustering, esta proyección
+preliminar permite anticipar la existencia de posibles segmentos de usuarios con patrones de comportamiento similares.
+
+
+#### Análisis de la proyección PCA coloreada por Grupo de Edad
+
+Ahora vamos a colorear la proyección en PC1-PC2 con una variable como:
+
+Grupo_Edad - ¿los grupos de edad se distribuyen de forma distinta?
+
+Compra_Alta - ¿los compradores con gasto alto aparecen agrupados?
+
+Nivel_Satisfaccion - ¿los niveles de satisfacción generan patrones visuales?
+
+```{r, message=FALSE, warning=FALSE}
+
+# Añadir la variable al dataframe con las coordenadas del PCA
+pca_coords$Grupo_Edad <- datos_limpios$Grupo_Edad
+
+# Gráfico coloreado por grupo de edad
+ggplot(pca_coords, aes(x = PC1, y = PC2, color = Grupo_Edad)) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(title = "Proyección PC1-PC2 coloreada por Grupo de Edad",
+       x = "Componente Principal 1 (PC1)",
+       y = "Componente Principal 2 (PC2)") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set2")
+
+
+``` 
+
+
+El gráfico muestra la proyección de los usuarios sobre los dos primeros componentes 
+principales (PC1 y PC2) obtenidos mediante PCA.  
+Cada punto representa un usuario, y su color indica el grupo de edad al que pertenece 
+(`Joven`, `Adulto`, `Mayor`), según la variable `Grupo_Edad`.
+
+Se observa que:
+
+- Los tres grupos de edad aparecen **bastante mezclados** en el plano PC1-PC2.
+- No se detectan **agrupaciones visuales claras** que puedan asociarse directamente a la edad.
+- Se aprecia una leve concentración de usuarios jóvenes en la **zona izquierda inferior**, aunque no es concluyente.
+
+👉 **Conclusión**:  
+La edad, como variable individual, **no parece explicar una estructura latente diferenciada** 
+en los datos proyectados por PCA.  
+Por tanto, **no se identifica una segmentación natural clara por grupo de edad**
+en el espacio reducido, al menos con las variables numéricas consideradas.  
+Este análisis refuerza la idea de que para detectar posibles agrupaciones será necesario 
+**combinar múltiples variables** y aplicar técnicas no supervisadas, como el clustering, en fases posteriores (PRA2).
+
+
+
+#### Análisis de la proyección PCA coloreada por nivel de compra
+
+Ver si los usuarios que realizaron compras elevadas (por encima del tercer cuartil)
+tienden a agruparse en una zona del espacio PCA diferente al resto. 
+Esto podría sugerir que el nivel de gasto está relacionado con otros factores de
+comportamiento incluidos en las variables numéricas.
+
+```{r, message=FALSE, warning=FALSE}
+
+# Añadir Compra_Alta a las coordenadas del PCA
+pca_coords$Compra_Alta <- datos_limpios$Compra_Alta
+
+# Gráfico coloreado por Compra Alta
+library(ggplot2)
+ggplot(pca_coords, aes(x = PC1, y = PC2, color = Compra_Alta)) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(title = "Proyección PC1-PC2 coloreada por Compra Alta",
+       x = "Componente Principal 1 (PC1)",
+       y = "Componente Principal 2 (PC2)") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+
+
+``` 
+Este gráfico representa la proyección de los usuarios sobre los dos primeros componentes
+principales del Análisis de Componentes Principales (PC1 y PC2).  
+Los puntos están coloreados en función de la variable `Compra_Alta`, 
+que indica si el usuario realizó una compra elevada (por encima del tercer cuartil de gasto).
+
+Se observa que:
+
+- La **mayoría de los usuarios** se concentran en el centro del plano, y están 
+  identificados con el color correspondiente a **'No'** (no realizaron una compra alta).
+- Los usuarios que **sí realizaron compras altas** (`Sí`) aparecen **más dispersos**
+  y no forman **agrupaciones visuales claramente diferenciadas**.
+- No se detectan **patrones espaciales definidos** ni clústeres evidentes vinculados directamente al nivel de gasto.
+
+ **Conclusión**:  
+  La variable `Compra_Alta`, por sí sola, **no parece estar asociada a una estructura latente** 
+  en el espacio PCA.  
+  Esto sugiere que el nivel de gasto **no explica una segmentación natural clara** en 
+  los datos, aunque podría resultar útil si se combina con otras variables durante el análisis de clustering que se realizará en la PRA2.
+
+
+### CONCLUSIÓN PCA
+
+La visualización de la proyección en el espacio PC1-PC2 proporciona una primera aproximación
+a la estructura interna de los datos tras la reducción de dimensionalidad.
+Esta representación será de gran utilidad en la siguiente fase del proyecto (PRA2),
+donde se aplicarán técnicas de clustering sobre los componentes principales seleccionados, 
+con el objetivo de identificar perfiles de usuarios basados en su comportamiento de compra y navegación.
+
+
+# SVD (Descomposición en Valores Singulares)
+
+## Qué se va a hacer:
+
+Vamos a aplicar SVD (Singular Value Decomposition) sobre el mismo conjunto de 
+variables numéricas que usamos en el PCA, con el objetivo de comparar ambas 
+técnicas de reducción de dimensionalidad.
+
+
+## Porque se hace?:
+
+El PCA y el SVD están estrechamente relacionados.
+
+Aunque PCA es más común en análisis exploratorio, SVD ofrece una forma 
+matemáticamente más general de descomponer la matriz de datos.
+
+Aplicar SVD en esta fase nos permite demostrar competencias avanzadas y puede mejorar 
+la interpretación en datasets con alta correlación entre variables.
+
+
+## Como lo vamos hacer?:
+
+Seleccionaremos las variables numéricas ya estandarizadas (como en el PCA).
+
+Aplicaremos la función svd() de R.
+
+Analizaremos los valores singulares y su proporción de varianza explicada.
+
+Visualizaremos la varianza acumulada.
+
+Interpretaremos los resultados y compararemos con el PCA.
+
+
+### Aplicar SVD
+
+```{r svd_descomposicion, message=FALSE, warning=FALSE}
+library(dplyr)
+
+# Seleccionar las mismas variables numéricas que en el PCA
+
+vars_numericas <- datos_limpios %>%
+  select(Age, Purchase_Amount, Frequency_of_Purchase,
+         Customer_Satisfaction, Return_Rate, Time_to_Decision,
+         Time_Spent_on_Product_Research.hours.)
+
+# Normalizar las variables (media 0, desviación 1)
+vars_norm <- scale(vars_numericas)
+
+# Aplicar SVD
+svd_result <- svd(vars_norm)
+
+# Mostrar las dimensiones de cada componente
+cat("Dimensiones de U:", dim(svd_result$u), "\n")
+cat("Longitud de d (valores singulares):", length(svd_result$d), "\n")
+cat("Dimensiones de V:", dim(svd_result$v), "\n")
+
+# Calcular proporción de varianza explicada
+varianza_svd <- svd_result$d^2 / sum(svd_result$d^2)
+varianza_acumulada_svd <- cumsum(varianza_svd)
+
+# Mostrar varianza explicada
+data.frame(
+  Componente = paste0("S", 1:length(varianza_svd)),
+  Varianza = round(varianza_svd, 4),
+  Acumulada = round(varianza_acumulada_svd, 4)
+)
+
+
+
+
+``` 
+  
+###  Visualización: Varianza acumulada
+
+```{r grafico_svd_varianza, message=FALSE, warning=FALSE}
+library(ggplot2)
+
+df_svd <- data.frame(
+  Componente = factor(1:length(varianza_svd)),
+  Varianza = varianza_svd,
+  Acumulada = varianza_acumulada_svd
+)
+
+ggplot(df_svd, aes(x = Componente, y = Acumulada)) +
+  geom_line(color = "darkgreen") +
+  geom_point(size = 2, color = "darkgreen") +
+  geom_text(aes(label = paste0(round(Acumulada * 100, 1), "%")),
+            vjust = -0.5, size = 3.5) +
+  labs(title = "Varianza acumulada explicada por SVD",
+       x = "Componente",
+       y = "Varianza acumulada") +
+  theme_minimal()
+  
+```  
+  
+###  Interpretación de los resultados
+
+Al igual que el PCA, la descomposición SVD transforma la matriz original en una combinación 
+lineal de componentes que explican progresivamente mayor parte de la varianza.
+
+En nuestro caso, los **5 primeros componentes obtenidos por SVD explican más del 70% de la varianza**,
+lo cual coincide con el criterio de selección usado en el PCA.
+
+Esta convergencia entre técnicas refuerza la validez de la estructura interna del 
+dataset y muestra que ambas técnicas pueden utilizarse como base para clustering o modelado en PRA2.
+
+
+
+###  ¿Qué haremos a continuación?
+
+En lugar de elegir entre PCA o SVD, **conservaremos los resultados de ambas** técnicas.
+Para los próximos pasos (como clustering), decidiremos cuál ofrece mejor separación visual o
+interpretabilidad según el caso.
+
+A continuación vamos a construir una visualización de proyección SVD similar a la del PCA, 
+utilizando los dos primeros componentes.
+Esto nos ayudará a observar si existen patrones o agrupaciones visibles desde 
+otra perspectiva de reducción de dimensionalidad.
+
+
+Después de aplicar SVD, obtuvimos:
+
+*U*: matriz de componentes por observación
+
+*d*: valores singulares
+
+*V*: matriz de componentes por variable
+
+Multiplicaremos *U × d* para obtener las coordenadas proyectadas, y visualizaremos 
+esa proyección coloreando los puntos según una variable de interés, como Compra_Alta.
+
+Esto permitirá comprar la representación del espacio latente generado por SVD con el obtenido en PCA.
+
+
+### Visualización de SVD (U × d
+
+
+  
+```{r, message=FALSE, warning=FALSE}
+# Paso 1: Seleccionar variables numéricas relevantes
+vars_svd <- datos_limpios %>%
+  select(Age, Purchase_Amount, Frequency_of_Purchase,
+         Customer_Satisfaction, Return_Rate, Time_to_Decision,
+         Time_Spent_on_Product_Research.hours.)
+
+# Paso 2: Normalizar las variables
+vars_svd_norm <- scale(vars_svd)
+
+# Paso 3: Aplicar SVD
+svd_resultado <- svd(vars_svd_norm)
+U_svd <- svd_resultado$u
+d_svd <- svd_resultado$d
+V_svd <- svd_resultado$v
+
+# Paso 4: Proyección U × d
+proyeccion_svd <- as.data.frame(U_svd %*% diag(d_svd))
+
+# Paso 5: Añadir Compra_Alta como etiqueta
+proyeccion_svd$Compra_Alta <- datos_limpios$Compra_Alta
+
+# Paso 6: Renombrar columnas
+colnames(proyeccion_svd)[1:2] <- c("SVD1", "SVD2")
+
+# Paso 7: Gráfico
+library(ggplot2)
+ggplot(proyeccion_svd, aes(x = SVD1, y = SVD2, color = Compra_Alta)) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(title = "Proyección SVD (componentes 1 y 2)",
+       x = "Componente SVD 1", y = "Componente SVD 2",
+       color = "Compra Alta") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+
+
+```  
+### Interpretación del gráfico
+
+Se ha representado la proyección de los datos en el espacio generado por los dos 
+primeros componentes de la descomposición SVD (SVD1 y SVD2). 
+Cada punto representa un usuario, y se ha coloreado en función de la variable binaria Compra_Alta.
+
+La distribución observada en el gráfico muestra que:
+
+La mayoría de los puntos rojos (usuarios que no realizaron una compra alta) 
+están concentrados en el centro del gráfico.
+
+Los puntos azules (usuarios con compra alta) están dispersos a lo largo del plano, 
+sin una separación clara respecto a los demás.
+
+No se observan agrupaciones o patrones visuales definidos que permitan distinguir 
+directamente ambas clases (Sí vs No).
+
+
+### Conclusiones del análisis SVD
+
+La proyección SVD permite reducir la dimensionalidad conservando la mayor parte de la 
+información, pero no revela una estructura clara entre las clases.
+
+Al igual que ocurría con PCA, la variable Compra_Alta no se alinea con una segmentación visual inmediata.
+
+Aun así, el uso de SVD puede ser muy útil como técnica previa al clustering no supervisado
+o para alimentar modelos predictivos en PRA2, ya que ayuda a evitar redundancia entre variables numéricas.
+
+
+
+## Comparativa visual PCA SVD
+
+Vamos a generar una comparativa visual entre PCA y SVD usando los dos primeros 
+componentes de cada técnica. Esto te permitirá evaluar si ambas reducciones de 
+dimensionalidad ofrecen patrones distintos o similares.
+
+
+### ¿Qué vamos a hacer y por qué? 
+
+
+Objetivo: comparar visualmente el resultado del PCA y el SVD en cuanto a la
+distribución de los datos proyectados y la separación entre clases (Compra_Alta).
+
+Esto es útil para:
+
+Ver si alguna técnica ofrece una separación más clara entre usuarios
+
+Justificar cuál usar en la fase de clustering o modelado en la PRA2
+
+Mostrar dominio avanzado de métodos de reducción de dimensionalidad
+
+
+```{r, message=FALSE, warning=FALSE}
+# Unir coordenadas de PCA y SVD para comparativa
+comparativa_df <- data.frame(
+  PC1 = pca_resultado$x[, 1],
+  PC2 = pca_resultado$x[, 2],
+  SVD1 = proyeccion_svd$SVD1,
+  SVD2 = proyeccion_svd$SVD2,
+  Compra_Alta = datos_limpios$Compra_Alta
+)
+
+# Cargar librería necesaria
+library(ggplot2)
+library(patchwork)  # para combinar gráficos
+
+# Gráfico PCA
+plot_pca <- ggplot(comparativa_df, aes(x = PC1, y = PC2, color = Compra_Alta)) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(title = "Proyección PCA (PC1 vs PC2)",
+       x = "Componente Principal 1",
+       y = "Componente Principal 2") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal()
+
+# Gráfico SVD
+plot_svd <- ggplot(comparativa_df, aes(x = SVD1, y = SVD2, color = Compra_Alta)) +
+  geom_point(alpha = 0.7, size = 2) +
+  labs(title = "Proyección SVD (SVD1 vs SVD2)",
+       x = "Componente SVD 1",
+       y = "Componente SVD 2") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal()
+
+# Mostrar los dos gráficos juntos
+plot_pca + plot_svd
+
+
+```
+  
+### Interpretación de resultados
+
+Al comparar la proyección PCA y la proyección SVD en los dos primeros componentes, 
+se observan patrones similares en ambas técnicas:
+
+Distribución general: 
+  los usuarios con Compra_Alta = "Sí" (azul) están dispersos en ambas proyecciones,
+  sin formar un grupo visualmente aislado.
+
+Densidad central: 
+  en ambos gráficos, los usuarios con Compra_Alta = "No" (rojo) ocupan mayoritariamente 
+  el centro de la nube de puntos.
+
+Separación entre clases: 
+  no se aprecia una separación nítida entre grupos en ninguno de los dos métodos, 
+  aunque el plano PCA muestra ligeramente más concentración de usuarios con compras 
+  altas en regiones periféricas.
+  
+  
+### Conclusión
+
+Ambas técnicas son válidas y reflejan estructuras similares.
+
+PCA podría resultar más interpretable al estar basado en varianza, mientras que SVD 
+es más útil en entornos matriciales y computacionalmente más robusto en algunos casos.
+
+Para la fase de clustering o modelado en PRA2, cualquiera de las dos técnicas es aplicable, 
+aunque se recomienda PCA por su mayor interpretabilidad y uso académico más frecuente.
+
+
+
+## Conclusión final de la fase de reducción de dimensionalidad (PCA y SVD)
+
+En esta fase se han aplicado dos técnicas clásicas de reducción de dimensionalidad: 
+Análisis de Componentes Principales (PCA) y Descomposición en Valores Singulares (SVD),
+sobre el mismo conjunto de variables numéricas previamente estandarizadas.
+
+Ambas técnicas han permitido:
+
+  Detectar la proporción de varianza explicada por los componentes principales.
+
+  Representar los datos en un espacio reducido de dos dimensiones, facilitando la exploración visual.
+
+  Comparar la proyección con respecto a una variable de interés (Compra_Alta),
+  observando si existen agrupaciones naturales o separación de clases.
+
+Los resultados muestran que:
+
+  Los cinco primeros componentes de PCA y SVD explican más del 70 % de la varianza total.
+
+  Las proyecciones visuales generadas por ambas técnicas son muy similares, 
+  sin segmentaciones claras según la variable Compra_Alta.
+
+  No se identifican agrupaciones naturales definidas en los planos bidimensionales,
+  lo cual es habitual cuando los grupos no están bien separados linealmente.
+
+Por lo tanto, se concluye que tanto PCA como SVD son técnicas válidas para representar y
+resumir la información de los datos.
+De cara a la siguiente fase de análisis (clustering o modelado supervisado en PRA2), 
+se utilizarán los componentes seleccionados mediante PCA por su mayor interpretabilidad y tradición académica.
+
+El uso complementario de SVD ha permitido confirmar la robustez de la estructura interna 
+del dataset y aporta un valor añadido en términos de profundidad analítica y
+comprensión matemática del problema.
+
+
+
+# Continua PR2
+
+
+# Bibliografía
+
+1. Análisis de Componentes Principales (PCA): Simplificando la Complejidad - ESEID AI Business School. (2024, November 14). https://eseid.com/analisis-de-componentes-principales-pca/
+
+2. Bock, Tim. (2017, August 1). Singular Value Decomposition (SVD) Tutorial Using Examples in R. Displayr. https://www.displayr.com/singular-value-decomposition-in-r/
+
+3. Lab, R. in the. (2021, November 5). Principal Component Analysis through Singular Value Decomposition | R-bloggers. https://www.r-bloggers.com/2021/11/principal-component-analysis-through-singular-value-decomposition/
+
+4. PID_00285264_R_cat. (n.d.). Retrieved April 30, 2025, from http://localhost:8888/notebooks/Desktop/UOC/Semestre2/Mineria%20de%20Datos/PR1/Ejemplo/PID_00285264_R_cat.ipynb?
+svd function—RDocumentation. (n.d.). Retrieved April 30, 2025, from https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/svd
